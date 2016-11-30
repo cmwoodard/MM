@@ -9,8 +9,6 @@ class Board
 	@the_board=[]		
 	@code = []
 	@hints = []
-	#inializes arrays
-	4.times{@code.push(@colors[rand(0..7)])}
 	32.times{|x| @the_board.push("o")}
   end
   
@@ -26,7 +24,7 @@ class Board
 	else
 		print "#{@code}\n"
 	end
-	print "\n   1   2   3   4\n"
+	print "\n   1   2   3   4      X = Correct spot AND color, Y = correct color \n"
 	print "  ---------------\n"
 	
 	(1..the_board.length).each{|x|		
@@ -68,9 +66,16 @@ class Board
   def reset_board
     @the_board=[]
     36.times{|x| @the_board.push("o")}	
+  end 
+  
+  def create_board
+    4.times{|x|
+		puts "What color would you like for slot #{x+1}?"
+		@code.push(gets.chomp)
+	}
   end  
   
-  def next_turn
+  def player_turn
 	4.times{
 		print "What color for slot #{@turn_count%4 +1}? "
 		guess = gets.chomp
@@ -102,17 +107,57 @@ class Board
 		@game_over = true
 	end
   end
+
+  def computer_turn
+	next_turn = []
+	4.times{
+		print "What color for slot #{@turn_count%4 +1}? "
+		guess = @colors[rand(0..7)]
+		@the_board[@turn_count]=guess
+		puts guess		
+	
+	
+	if  @code.include? @the_board[@turn_count]
+			if @the_board[@turn_count] == @code[turn_count%4] 
+			  @hints.push("Y")
+			 else
+			  @hints.push("X")
+			 end
+		else
+			@hints.push(" ")
+		end
+		@turn_count+=1
+		}
+	if @turn_count > 31		
+		self.show_board
+		puts "You Win!! The computer could not guess!!"
+		@game_over = true
+	end
+	gets
+  end
 end
 
 game = Board.new
 
 puts "\nWould you like to be 1)Codebreaker or 2)Codemaker?"
 game_type = gets.chomp
+
 if game_type.to_i == 1
+	4.times{game.code.push(game.colors[rand(0..7)])}
+	
 	while game.game_over==false	  
 	  game.show_board
-	  game.next_turn  	  
+	  game.player_turn  	  
 	end
+else
+	#initialize the board with your selected colors
+	game.create_board
+	while game.game_over==false		
+		game.show_board
+		#computer iterates to guess!
+		game.computer_turn
+	end
+		
 end
 
 puts "GAME OVER"
